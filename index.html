@@ -36,12 +36,6 @@
     import { audioBufferToWav } from './audiobuffer-to-wav.js'
     import { readKFTM } from './read-kftm.js'
 
-    function arrayBufferToBlobURL(buffer) {
-      const blob = new Blob([new Uint8Array(buffer)]);
-      const url = URL.createObjectURL(blob);
-      return url;
-    }
-
     window.processFile = function openFile(file) {
       document.querySelector('h2').innerText = ''
       document.querySelector('address').innerText = ''
@@ -62,7 +56,8 @@
           return audioBuffer;
         })
         .then(audioBufferToWav)
-        .then(arrayBufferToBlobURL)
+        .then(buffer => new Blob([new Uint8Array(buffer)]))
+        .then(blob => URL.createObjectURL(blob))
         .then(url => {
           document.querySelector('audio').src = url
           document.querySelector('audio').style.display = '';
