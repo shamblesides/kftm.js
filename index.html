@@ -32,6 +32,29 @@
     <address></address>
     <p></p>
   </header>
-  <script src="player.js" type="module"></script>
+  <script type="module">
+    import { audioBufferToWav } from './audiobuffer-to-wav.js'
+    import { readKFTM } from './read-kftm.js'
+
+    function arrayBufferToBlobURL(buffer) {
+      const blob = new Blob([new Uint8Array(buffer)]);
+      const url = URL.createObjectURL(blob);
+      return url;
+    }
+
+    fetch('he_is_risen.KFTM')
+    .then(x => x.arrayBuffer())
+    .then(readKFTM)
+    .then(({ title, composer, description, audioBuffer }) => {
+      document.querySelector('h2').innerText = title;
+      document.querySelector('address').innerText = composer;
+      document.querySelector('p').innerText = description;
+      return audioBuffer;
+    })
+    .then(audioBufferToWav)
+    .then(arrayBufferToBlobURL)
+    .then(url => document.querySelector('audio').src = url)
+    .catch(err => alert(err.message));
+  </script>
 </body>
 </html>
