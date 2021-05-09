@@ -2,7 +2,7 @@ const MAGIC_NUMBER = 'kftm'.split('').map((c,i) => c.charCodeAt(0) << (i * 8)).r
 const SET_SPEED = 1;
 const JUMP = 2;
 
-export function readKFTM(/** @type{ArrayBuffer} */ buf) {
+export async function readKFTM(/** @type{ArrayBuffer} */ buf) {
   const data = new DataView(buf);
   const magicNumber = data.getUint32(0, true);
   if (magicNumber !== MAGIC_NUMBER) {
@@ -25,7 +25,7 @@ export function readKFTM(/** @type{ArrayBuffer} */ buf) {
   const subRows = 8;
 
   let duration = 0;
-  let dt = 0;
+  let dt = 1 / 8;
   let i = 6 + 3*64 + 2;
   const rows = Array(rowCount).fill().map((_, rowNumber) => {
     const tStart = duration;
@@ -40,6 +40,7 @@ export function readKFTM(/** @type{ArrayBuffer} */ buf) {
       i += 8;
       return { amp, freq };
     })
+    console.log(cmd, arg)
     if (cmd === SET_SPEED) {
       dt = 1/arg;
     } else if (cmd === JUMP) {
