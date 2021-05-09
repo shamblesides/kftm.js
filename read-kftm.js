@@ -40,7 +40,6 @@ export async function readKFTM(/** @type{ArrayBuffer} */ buf) {
       i += 8;
       return { amp, freq };
     })
-    console.log(cmd, arg)
     if (cmd === SET_SPEED) {
       dt = 1/arg;
     } else if (cmd === JUMP) {
