@@ -25,7 +25,7 @@
 </head>
 <body style="margin: 5vmin auto; width: 90vmin">
   <h1>kftm player</h1>
-  <input id="uploader" type="file" accept=".kftm">
+  <input id="uploader" type="file" accept=".kftm" onchange="processFile(this.files[0])">
   <audio controls></audio>
   <header>
     <h2></h2>
@@ -42,19 +42,44 @@
       return url;
     }
 
-    fetch('he_is_risen.KFTM')
-    .then(x => x.arrayBuffer())
-    .then(readKFTM)
-    .then(({ title, composer, description, audioBuffer }) => {
-      document.querySelector('h2').innerText = title;
-      document.querySelector('address').innerText = composer;
-      document.querySelector('p').innerText = description;
-      return audioBuffer;
-    })
-    .then(audioBufferToWav)
-    .then(arrayBufferToBlobURL)
-    .then(url => document.querySelector('audio').src = url)
-    .catch(err => alert(err.message));
+    window.processFile = function openFile(file) {
+      document.querySelector('h2').innerText = ''
+      document.querySelector('address').innerText = ''
+      document.querySelector('p').innerText = ''
+      document.querySelector('audio').style.display = 'none';
+
+      if (!file) return;
+      document.querySelector('p').innerText = 'Loading song......'
+
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onload = function () {
+        readKFTM(reader.result)
+        .then(({ title, composer, description, audioBuffer }) => {
+          document.querySelector('h2').innerText = title;
+          document.querySelector('address').innerText = composer;
+          document.querySelector('p').innerText = description;
+          return audioBuffer;
+        })
+        .then(audioBufferToWav)
+        .then(arrayBufferToBlobURL)
+        .then(url => {
+          document.querySelector('audio').src = url
+          document.querySelector('audio').style.display = '';
+        })
+        .catch(err => {
+          document.querySelector('p').innerText = err.toString();
+
+          document.querySelector('h2').innerText = ''
+          document.querySelector('address').innerText = ''
+          document.querySelector('audio').style.display = 'none';
+        });
+      }
+    }
+
+    // if file is still in input upon page reload, put it back in
+    // if it's empty, this will clear the file display
+    window.processFile(document.querySelector('input').files[0]);
   </script>
 </body>
 </html>
