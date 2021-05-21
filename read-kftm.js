@@ -41,10 +41,21 @@ export async function readKFTM(/** @type{ArrayBuffer} */ buf) {
       return { amp, freq };
     })
     if (cmd === SET_SPEED) {
-      dt = 1/arg;
+      if (arg > 0) {
+        dt = 1/arg;
+      } else if (arg === 0) {
+        dt = 0;
+      } else {
+        console.warn(`TODO: speed=${arg} not implemented`)
+        dt = 0;
+      }
     } else if (cmd === JUMP) {
-      // TODO looping
-      dt = 0;
+      if (arg < 0 || arg >= rowCount) {
+        dt = 0;
+      } else {
+        console.warn(`TODO: should jump to row=${arg}`)
+        dt = 0;
+      }
     }
     if (!(dt > 0)) {
       return null;

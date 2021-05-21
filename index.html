@@ -63,6 +63,7 @@
           document.querySelector('audio').style.display = '';
         })
         .catch(err => {
+          console.error(err)
           document.querySelector('p').innerText = err.toString();
 
           document.querySelector('h2').innerText = ''
